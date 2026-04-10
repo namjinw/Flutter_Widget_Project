@@ -25,10 +25,72 @@ class _Widget1PageState extends State<Widget1Page> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: appBar(),
-      backgroundColor: Colors.white,
-      body: SafeArea(child: content()),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text(
+              '앱을 종료하시겠습니까?',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: .w700,
+                fontSize: 18,
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  '닫기',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: .w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  List<String> text = [];
+                  final content = List.generate(
+                    todoList.length,
+                    (index) => text.add(todoList[index].title),
+                  );
+
+
+
+                  await MethodChannel('todo').invokeMethod('notification', {
+                    'count': todoList.length,
+                    'content': '',
+                  });
+
+                  SystemNavigator.pop();
+                },
+                child: Text(
+                  '종료하기',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: .w700,
+                    fontSize: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+      child: Scaffold(
+        appBar: appBar(),
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
+        body: SafeArea(child: content()),
+      ),
     );
   }
 
@@ -121,10 +183,14 @@ class _Widget1PageState extends State<Widget1Page> {
     ),
   );
 
-  Widget buttons() => Row(children: [buttonItem(() {
-    todoList.clear();
-    setState(() {});
-  }, 'clear All')]);
+  Widget buttons() => Row(
+    children: [
+      buttonItem(() {
+        todoList.clear();
+        setState(() {});
+      }, 'clear All'),
+    ],
+  );
 
   Widget buttonItem(ontap, text) => GestureDetector(
     onTap: ontap,
