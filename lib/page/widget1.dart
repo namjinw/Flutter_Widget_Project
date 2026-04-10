@@ -61,47 +61,82 @@ class _Widget1PageState extends State<Widget1Page> {
   // );
 
   Widget content() => SizedBox(
-    height: 500,
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: SingleChildScrollView(
-        physics: RangeMaintainingScrollPhysics(),
-        child: Column(
-          spacing: 5,
-          crossAxisAlignment: .start,
-          children: [
-            Divider(height: 1, color: Colors.grey),
-            Text(
-              'To do List',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: .w700,
-              ),
+      child: Column(
+        spacing: 5,
+        crossAxisAlignment: .start,
+        children: [
+          Divider(height: 1, color: Colors.grey),
+          Text(
+            'To do List',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: .w700,
             ),
+          ),
 
-            // Container(height: 500, color: Colors.red),
-            //
-            // Container(height: 500, color: Colors.blue),
-            SizedBox(
-              height: 450,
-              child: ListView(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                children: .generate(
-                  todoList.length,
-                  (index) => todoListItem(todoList[index], index),
-                ),
-              ),
+          // Container(height: 500, color: Colors.red),
+          //
+          // Container(height: 500, color: Colors.blue),
+          cardList(),
+          section(),
+        ],
+      ),
+    ),
+  );
+
+  Widget cardList() => SizedBox(
+    height: 450,
+    child: ListView(
+      physics: RangeMaintainingScrollPhysics(),
+      children: .generate(
+        todoList.length,
+        (index) => todoListItem(todoList[index], index),
+      ),
+    ),
+  );
+
+  Widget section() => Container(
+    decoration: BoxDecoration(
+      border: .fromLTRB(top: BorderSide(width: 1, color: Colors.black)),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: .spaceBetween,
+        children: [
+          Text(
+            'Completed Todos: ${todoList.length}',
+            style: TextStyle(
+              fontWeight: .w700,
+              fontSize: 18,
+              color: Colors.black,
             ),
-            Container(
-              height: 50,
-              decoration: BoxDecoration(
-                border: .fromLTRB(top: BorderSide(width: 1, color: Colors.black))
-              ),
-            )
-          ],
-        ),
+          ),
+          buttons(),
+        ],
+      ),
+    ),
+  );
+
+  Widget buttons() => Row(children: [buttonItem(() {
+    todoList.clear();
+    setState(() {});
+  }, 'clear All')]);
+
+  Widget buttonItem(ontap, text) => GestureDetector(
+    onTap: ontap,
+    child: Container(
+      padding: .symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: Color(0xffadbdc8),
+        borderRadius: .circular(6),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: .w700),
       ),
     ),
   );
@@ -110,9 +145,7 @@ class _Widget1PageState extends State<Widget1Page> {
     margin: .only(bottom: 5),
     width: MediaQuery.sizeOf(context).width,
     height: 50,
-    decoration: BoxDecoration(
-      border: .all(color: Colors.grey, width: 1.5)
-    ),
+    decoration: BoxDecoration(border: .all(color: Colors.grey, width: 1.5)),
     child: Row(
       children: [
         Expanded(
@@ -127,7 +160,7 @@ class _Widget1PageState extends State<Widget1Page> {
                 fontSize: 20,
                 fontWeight: .w600,
                 decorationThickness: 2,
-                decoration: todo.checked ? .lineThrough : .none
+                decoration: todo.checked ? .lineThrough : .none,
               ),
             ),
             value: todo.checked,
@@ -151,6 +184,7 @@ class _Widget1PageState extends State<Widget1Page> {
 
   AppBar appBar() => AppBar(
     toolbarHeight: 160,
+    surfaceTintColor: Colors.transparent,
     backgroundColor: Colors.transparent,
     centerTitle: true,
     title: Column(
