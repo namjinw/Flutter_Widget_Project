@@ -15,6 +15,21 @@ class _Widget1PageState extends State<Widget1Page> {
 
   List<TodoList> todoList = [];
 
+  String _buildNumberedTodoText() {
+    final titles = todoList
+        .map((todo) => todo.title.trim()) // 요소 순회 하면서 title.trim만 뽑기
+        .toList(); // 리스트화
+
+    if (todoList.isEmpty) return '할 일이 없습니다.'; // 이거 추가
+
+    return titles
+        .asMap() // 리스트(List)를 맵(Map) 형태로 잠시 변환
+        .entries // 키와 값 쌍으로 묶어서 출력
+        .map((entry) => '${entry.key + 1}. ${entry.value}')
+         // 각각 요소들을 순회하며 이런식으로 출력
+        .join('\n'); // 하나의 텍스트로 합치기
+  }
+
   void makeTodoList(String title) {
     todoList.add(TodoList(title: title.trim(), checked: false));
     _controller.text = '';
@@ -41,6 +56,7 @@ class _Widget1PageState extends State<Widget1Page> {
                 fontSize: 18,
               ),
             ),
+            actionsAlignment: .center,
             actions: [
               ElevatedButton(
                 onPressed: () {
@@ -57,17 +73,12 @@ class _Widget1PageState extends State<Widget1Page> {
               ),
               ElevatedButton(
                 onPressed: () async {
-                  List<String> text = [];
-                  final content = List.generate(
-                    todoList.length,
-                    (index) => text.add(todoList[index].title),
-                  );
-
-
+                  final content = _buildNumberedTodoText();
+                  print(content);
 
                   await MethodChannel('todo').invokeMethod('notification', {
                     'count': todoList.length,
-                    'content': '',
+                    'content': content,
                   });
 
                   SystemNavigator.pop();
